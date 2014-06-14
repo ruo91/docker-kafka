@@ -7,6 +7,9 @@ MAINTAINER Yongbok Kim <ruo91@yongbok.net>
 # Last Package Update & Install
 RUN apt-get update && apt-get install -y curl supervisor
 
+# ENV
+ENV SRC_DIR /opt
+
 # JDK
 ENV JAVA_HOME /usr/local/jdk
 ENV PATH $PATH:$JAVA_HOME/bin
