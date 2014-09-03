@@ -5,21 +5,24 @@ FROM     ubuntu:14.04
 MAINTAINER Yongbok Kim <ruo91@yongbok.net>
 
 # Last Package Update & Install
-RUN apt-get update && apt-get install -y curl supervisor
+RUN apt-get update && apt-get install -y curl supervisor openssh-server nano
 
 # ENV
 ENV SRC_DIR /opt
 
 # JDK
+ENV JDK_URL http://download.oracle.com/otn-pub/java/jdk
+ENV JDK_VER 8u20-b26
+ENV JDK_VER2 jdk-8u20
 ENV JAVA_HOME /usr/local/jdk
 ENV PATH $PATH:$JAVA_HOME/bin
-RUN curl -LO "http://download.oracle.com/otn-pub/java/jdk/7u55-b13/jdk-7u55-linux-x64.tar.gz" -H 'Cookie: oraclelicense=accept-securebackup-cookie' \
- && tar xzf jdk-7u55-linux-x64.tar.gz && mv jdk1.7.0_55 /usr/local/jdk && rm -f jdk-7u55-linux-x64.tar.gz \
- && echo '' >> /etc/profile \
- && echo '# JDK' >> /etc/profile \
- && echo "export JAVA_HOME=$JAVA_HOME" >> /etc/profile \
- && echo 'export PATH=$PATH:$JAVA_HOME/bin' >> /etc/profile \
- && echo '' >> /etc/profile
+RUN cd $SRC_DIR && curl -LO "$JDK_URL/$JDK_VER/$JDK_VER2-linux-x64.tar.gz" -H 'Cookie: oraclelicense=accept-securebackup-cookie' \
+&& tar xzf $JDK_VER2-linux-x64.tar.gz && mv jdk1* $JAVA_HOME && rm -f $JDK_VER2-linux-x64.tar.gz \
+&& echo '' >> /etc/profile \
+&& echo '# JDK' >> /etc/profile \
+&& echo "export JAVA_HOME=$JAVA_HOME" >> /etc/profile \
+&& echo 'export PATH="$PATH:$JAVA_HOME/bin"' >> /etc/profile \
+&& echo '' >> /etc/profile
 
 # Apache Kafka
 ENV KAFKA_VER 0.8.1.1
@@ -49,7 +52,7 @@ RUN mkdir -p /var/log/supervisor
 ADD conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Port
-EXPOSE 2181 9092
+EXPOSE 22 9092
 
 # Daemon
 CMD ["/usr/bin/supervisord"]
